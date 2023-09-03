@@ -12,6 +12,7 @@ public static partial class Program
 
         var proxy = new FooBarProxy(new MediatrFake());
         proxy.ExecuteAapCommand("s");
+        proxy.ExecuteSchaap_SchaapCommand("s");
         proxy.ExecutePieterSchaap();
     }
 }

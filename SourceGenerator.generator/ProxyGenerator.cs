@@ -18,12 +18,7 @@ public class ProxyGenerator : ISourceGenerator
     {
         var compilation = context.Compilation;
 
-        // Find all records implementing IRequest
-        // var records = compilation.SyntaxTrees
-        //     .SelectMany(tree => tree.GetRoot().DescendantNodes())
-        //     .OfType<RecordDeclarationSyntax>()
-        //     .Where(r => r.BaseList?.Types.Any(t => t.ToString() == "IRequest") == true)
-        //     .ToList();
+      
 
         var records = compilation.SyntaxTrees
             .SelectMany(tree => GetAllRecords(tree.GetRoot()))
@@ -54,8 +49,10 @@ public class ProxyGenerator : ISourceGenerator
 
     private string GenerateProxyClass(List<RecordDeclarationSyntax> records, Compilation compilation)
     {
+        
         var methods = string.Join("\n", records.Select(record =>
         {
+            
             var recordName = record.Identifier.Text;
             var enclosingTypeName = (record.Parent as ClassDeclarationSyntax)?.Identifier.Text;
 
@@ -63,6 +60,12 @@ public class ProxyGenerator : ISourceGenerator
             var methodName = enclosingTypeName != null ? $"{enclosingTypeName}_{recordName}" : recordName;
 
             var recordSymbol = compilation.GetSemanticModel(record.SyntaxTree).GetDeclaredSymbol(record) as INamedTypeSymbol;
+            if (!recordSymbol.GetAttributes().Any(attr => attr.AttributeClass.ToDisplayString() == "SourceGenerator.GenerateProxyAttribute"))
+            {
+                return string.Empty;
+            }
+
+            // This record has the SpecialAttribute applied. Generate code for it.
             var constructorParameters = recordSymbol?.InstanceConstructors.FirstOrDefault()?.Parameters;
             var parameterDeclarations = string.Join(", ", constructorParameters?.Select(p => $"{p.Type} {p.Name}") ?? Enumerable.Empty<string>());
             var parameterValues = string.Join(", ", constructorParameters?.Select(p => p.Name) ?? Enumerable.Empty<string>());
