@@ -11,10 +11,19 @@ public static partial class Program
         }
 
         var proxy = new FooBarProxy(new MediatrFake());
-        proxy.ExecuteAapCommand(new AapCommand("s"));
+        proxy.ExecuteAapCommand("s");
+        proxy.ExecutePieterSchaap();
     }
 }
 
+public partial class FooBarProxy
+{
+    public void ExecutePieterSchaap()
+    {
+        var request = new Schaap.SchaapCommand("Pieter");
+        _mediator.Execute(request);
+    }
+}
 public class MediatrFake: IMediator
 {
     public void Execute(IRequest request)

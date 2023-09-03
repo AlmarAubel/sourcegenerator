@@ -1,0 +1,5 @@
+# Treat SB0001 as a warning during build
+dotnet_diagnostic.SB0001.severity = warning
+
+ # Optionally, if you want to keep it as info in the editor (Visual Studio/IDE)
+dotnet_diagnostic.SB0001.editorconfig_severity = info

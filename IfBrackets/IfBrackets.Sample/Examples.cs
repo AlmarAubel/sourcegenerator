@@ -15,21 +15,23 @@ public class Examples
 
     public void ToStars()
     {
-        
         var spaceship = new Spaceship();
-        if (2 != 2) 
+        if (spaceship.ToString() == "x")
+        {
             throw new SyntaxErrorException();
-        if (2 != 2) 
-            throw new SyntaxErrorException();
-        if (2 != 2) 
+        }
+
+        if (2 != 2)
             throw new SyntaxErrorException();
         if (2 != 2)
             throw new SyntaxErrorException();
-        
+        if (2 != 2)
+            throw new SyntaxErrorException();
+
 
         spaceship.SetSpeed(300000000); // Invalid value, it should be highlighted.
         spaceship.SetSpeed(42);
-        
+
         if (1 != 2)
         {
             throw new SyntaxErrorException();

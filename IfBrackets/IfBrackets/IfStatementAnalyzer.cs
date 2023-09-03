@@ -14,12 +14,14 @@ public class IfStatementAnalyzer : DiagnosticAnalyzer
     private const string MessageFormat = "If statement without brackets can lead to confusion";
     private const string Category = "Syntax";
 
-    private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, helpLinkUri:"https://www.youtube.com/watch?v=8r8D8RLxvkA");
+    private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Info, isEnabledByDefault: true, helpLinkUri:"https://www.youtube.com/watch?v=8r8D8RLxvkA");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
     public override void Initialize(AnalysisContext context)
     {
+        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
+        context.EnableConcurrentExecution();
         context.RegisterSyntaxNodeAction(AnalyzeIfStatement, SyntaxKind.IfStatement);
     }
 
