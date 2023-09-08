@@ -1,11 +1,12 @@
 using System.Threading.Tasks;
-using IfBrackets;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Testing;
+using Xunit;
 using Verifier =
     Microsoft.CodeAnalysis.CSharp.Testing.XUnit.CodeFixVerifier<IfBrackets.IfStatementAnalyzer,
         IfBrackets.IfWithoutBracketsCodeFixProvider>;
-using Xunit;
+
+namespace IfBrackets.Tests;
 
 public class IfStatementTests
 {
@@ -22,6 +23,7 @@ class TestClass
             Console.WriteLine(""True"");
     }
 }";
+
 
         var expected = Verifier.Diagnostic(IfStatementAnalyzer.DiagnosticId)
             .WithLocation(8, 13)

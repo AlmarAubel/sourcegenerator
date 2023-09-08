@@ -17,7 +17,7 @@ public static partial class Program
     }
 }
 
-public partial class FooBarProxy
+public partial  class FooBarProxy
 {
     public void ExecutePieterSchaap()
     {
