@@ -1,5 +1,18 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/CodeInspection/PencilsConfiguration/ActualSeverity/@EntryValue">INFO</s:String>
 	<s:String x:Key="/Default/Environment/Highlighting/HighlightingSourceSnapshotLocation/@EntryValue">/Users/almaraubel/Library/Caches/JetBrains/Rider2023.2/resharper-host/temp/Rider/vAny/CoverageData/_SourceGenerator.912967559/Snapshot/snapshot.utdcvr</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=0684118c_002Df8b0_002D47f0_002Dac03_002D1b8c00de906f/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="AccesValueOnResultObjectWithoutcheckingIsSuccessOrFailureShouldWarn #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::6B69BFD6-2154-45F2-B95E-40ADBEF69310::net7.0::IfBrackets.Tests.UseResultValueWithoutCheckTests.AccesValueOnResultObjectWithoutcheckingIsSuccessOrFailureShouldWarn&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::6B69BFD6-2154-45F2-B95E-40ADBEF69310::net7.0::IfBrackets.Tests.UseResultValueWithoutCheckTests.AccesValueOnResultObjectWithcheckingShouldPass&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=87407d5e_002Dc8f8_002D4abe_002Da9da_002Df160c5e9a6d8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="AccesValueOnResultObjectWithoutcheckingIsSuccessOrFailureShouldWarn #4" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::6B69BFD6-2154-45F2-B95E-40ADBEF69310::net7.0::IfBrackets.Tests.UseResultValueWithoutCheckTests.AccesValueOnResultObjectWithoutcheckingIsSuccessOrFailureShouldWarn&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::6B69BFD6-2154-45F2-B95E-40ADBEF69310::net7.0::IfBrackets.Tests.UseResultValueWithoutCheckTests.AccesValueOnResultObjectWithcheckingShouldPass&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
 	
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=b9db4b26_002D610f_002D4ff6_002D99d1_002Da02248413b4d/@EntryIndexedValue">&lt;SessionState ContinuousTestingIsOn="True" ContinuousTestingMode="1" Name="Session" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;And&gt;
@@ -12,9 +25,10 @@
     &lt;/TestAncestor&gt;
   &lt;/And&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=c1d901e8_002D4080_002D4571_002Db6f5_002D8b07b8e269d2/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="AccesValueOnResultObjectWithoutcheckingIsSuccessOrFailureShouldWarn #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=c1d901e8_002D4080_002D4571_002Db6f5_002D8b07b8e269d2/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="AccesValueOnResultObjectWithoutcheckingIsSuccessOrFailureShouldWarn #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
     &lt;TestId&gt;xUnit::6B69BFD6-2154-45F2-B95E-40ADBEF69310::net7.0::IfBrackets.Tests.UseResultValueWithoutCheckTests.AccesValueOnResultObjectWithoutcheckingIsSuccessOrFailureShouldWarn&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::6B69BFD6-2154-45F2-B95E-40ADBEF69310::net7.0::IfBrackets.Tests.UseResultValueWithoutCheckTests.AccesValueOnResultObjectWithcheckingShouldPass&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=f6ff7969_002D4165_002D444e_002D94f7_002D693b77dac9d1/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="AccesValueOnResultObjectWithoutcheckingIsSuccessOrFailureShouldWarn" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;

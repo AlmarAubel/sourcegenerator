@@ -8,8 +8,11 @@ public class FunctionsWithResultObject
     public Result<int, string> GetId()
     {
         var idFromDbResult = GetIdFromDb();
+        var a = new Random().Next();
         //This is dangerous because we didn't check if the result was succesfull
-        idFromDbResult.IsSuccess
+        if (idFromDbResult.IsFailure) return "gaat niet goed";
+        //if (!idFromDbResult.IsSuccess) GetIdFromDb();
+        if(1 > a && idFromDbResult.IsSuccess)Console.WriteLine(idFromDbResult.Value);
         Console.WriteLine(idFromDbResult.Value);
         return idFromDbResult;
     }
