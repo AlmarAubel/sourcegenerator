@@ -10,11 +10,27 @@ public class FunctionsWithResultObject
         var idFromDbResult = GetIdFromDb();
         var a = new Random().Next();
         //This is dangerous because we didn't check if the result was succesfull
-        if (idFromDbResult.IsFailure) return "gaat niet goed";
-        //if (!idFromDbResult.IsSuccess) GetIdFromDb();
-        if(1 > a && idFromDbResult.IsSuccess)Console.WriteLine(idFromDbResult.Value);
+        //if (idFromDbResult.IsSuccess) return "gaat niet goed";
+        //if (idFromDbResult.IsSuccess)  return "GetIdFromDb()";
+        //if (!idFromDbResult.IsSuccess)  return "GetIdFromDb()";
+        
         Console.WriteLine(idFromDbResult.Value);
-        return idFromDbResult;
+        return "";
+    }   
+    
+    public Result<int, string> GetId(int axxx)
+    {
+        var idFromDbResult = GetIdFromDb();
+        var a = new Random().Next();
+        
+        if(1 > a && idFromDbResult.IsSuccess )Console.WriteLine(idFromDbResult.Value);
+
+        if (!idFromDbResult.IsSuccess) return idFromDbResult.IsSuccess ? idFromDbResult.Value : 0;
+      
+            Console.WriteLine(idFromDbResult.Value);
+        
+
+        return idFromDbResult.IsSuccess ? idFromDbResult.Value : 0;
     }
 
     private Result<int, string> GetIdFromDb()=>"This is an error";

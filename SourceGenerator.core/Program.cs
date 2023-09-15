@@ -1,9 +1,11 @@
 ﻿namespace SourceGenerator;
 
+using System;
 public static partial class Program
 {
     public static void Main(string[] args)
     {
+     
         Almar.HelloFrom("Generated Code");
         if (args[0] == "A")
         {

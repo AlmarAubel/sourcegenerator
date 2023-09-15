@@ -53,6 +53,12 @@ public class UseResultValueWithoutCheckTests
                            {
                                var idFromDbResult = GetIdFromDb();
                                var x= 10;
+                               
+                               if (idFromDbResult.IsSuccess)
+                              {
+                                  Console.WriteLine(idFromDbResult.Value);
+                              }
+                              
                                if (!idFromDbResult.IsSuccess) return "gaat niet goed";
                                Console.WriteLine(idFromDbResult.Value); //This is dangerous because we didn't check if the result was succesfull
                                return idFromDbResult;
