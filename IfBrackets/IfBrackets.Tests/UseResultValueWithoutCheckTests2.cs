@@ -15,31 +15,7 @@ public class UseResultValueWithoutCheckTests2:AbstractCSharpDiagnosticVerifier<I
 {
     public override DiagnosticDescriptor Descriptor { get; } = IfBrackets.UseResultValueWithoutCheck.Rule;
     
-    [Fact]
-    public async Task AccesValueOnResultObjectWithoutcheckingIsSuccessOrFailureShouldWarn()
-    {
-        var cSharpFunctionalExtensions= MetadataReference.CreateFromFile(typeof (CSharpFunctionalExtensions.Result).Assembly.Location);
-        await VerifyDiagnosticAsync(
-            """
-            using System;
-            using CSharpFunctionalExtensions;
-
-            namespace IfBrackets.Sample;
-
-            public class FunctionsWithResultObject
-            {
-                public Result<int, string> GetId()
-                {
-                    var idFromDbResult = GetIdFromDb();
-                    if (!idFromDbResult.IsSuccess)
-                        Console.WriteLine(idFromDbResult.Value); //This is dangerous because we didn't check if the result was succesfull
-                    return idFromDbResult;
-                }
-            
-                private Result<int, string> GetIdFromDb() => "This is an error";
-            }
-            """, options: Options.WithMetadataReferences( Options.MetadataReferences.Add(cSharpFunctionalExtensions)));
-    }  
+   
     [Fact]
     public async Task AccesValueOnResultObjectWithoutcheckingIsSuccessOrFailureShouldWarn2()
     {
@@ -49,24 +25,38 @@ public class UseResultValueWithoutCheckTests2:AbstractCSharpDiagnosticVerifier<I
             using System;
             using CSharpFunctionalExtensions;
 
-            namespace IfBrackets.Sample;
-
             public class FunctionsWithResultObject
             {
-                public int GetId()
+                public void GetId(int a)
                 {
-                    var idFromDbResult = GetIdFromDb();
-                  
-                   var b = 0;
-                   if(!idFromDbResult.IsSuccess) 
-                    b= [|idFromDbResult.Value|];
-                   
-                   return b;
+                   var result = Result.Success(1);
+                   if(!result.IsSuccess) Console.WriteLine( [|result.Value|]);
+                   if(result.IsSuccess == false) Console.WriteLine([|result.Value|]);
+                   var x=  a > 0 ? [|result.Value|]: 0;
                 }
-            
-                private Result<int, string> GetIdFromDb() => "This is an error";
             }
             """, options: Options.WithMetadataReferences( Options.MetadataReferences.Add(cSharpFunctionalExtensions)));
     }
     
+    [Fact]
+    public async Task AccesValueOnResultObjectWithcheckingIsSuccessShouldNotFail()
+    {
+        var cSharpFunctionalExtensions= MetadataReference.CreateFromFile(typeof (CSharpFunctionalExtensions.Result).Assembly.Location);
+        await VerifyDiagnosticAsync(
+            """
+            using System;
+            using CSharpFunctionalExtensions;
+
+            public class FunctionsWithResultObject
+            {
+                public void GetId(int a)
+                {
+                   var result = Result.Success(1);
+                   if(result.IsSuccess) Console.WriteLine(result.Value);
+                   if(result.IsSuccess == true) Console.WriteLine(result.Value);
+                   var x=  result.IsSuccess ? [|result.Value|]: 0;
+                }
+            }
+            """, options: Options.WithMetadataReferences( Options.MetadataReferences.Add(cSharpFunctionalExtensions)));
+    }
 }

@@ -40,7 +40,9 @@ public class UseResultValueWithoutCheck : DiagnosticAnalyzer
         var symbolInfo = context.SemanticModel.GetSymbolInfo(memberAccess);
         var memberSymbol = symbolInfo.Symbol as IPropertySymbol;
 
-        if (memberSymbol == null || memberSymbol.ContainingType.ToString() != "CSharpFunctionalExtensions.Result<int, string>") return;
+       // if (memberSymbol == null || memberSymbol.ContainingType.ToString() != "CSharpFunctionalExtensions.Result<int, string>") return;
+        if (memberSymbol == null || memberSymbol.ContainingType == null ||memberSymbol.ContainingType.Name != "Result" ||memberSymbol.ContainingType.ContainingNamespace.ToString() != "CSharpFunctionalExtensions" ) 
+            return;
 
         // Get the enclosing block (e.g., the method or property body)
         var enclosingBlock = memberAccess.Ancestors().FirstOrDefault(a => a is BlockSyntax);

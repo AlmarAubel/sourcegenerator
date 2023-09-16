@@ -22,7 +22,8 @@ public class FunctionsWithResultObject
     {
         var idFromDbResult = GetIdFromDb();
         var a = new Random().Next();
-        
+        var x = Result.Success(1);
+        if (true) Console.WriteLine(x.Value);
         if(1 > a && idFromDbResult.IsSuccess )
             Console.WriteLine(idFromDbResult.Value);
 
