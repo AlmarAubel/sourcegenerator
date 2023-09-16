@@ -15,18 +15,18 @@ public static partial class Program
         var proxy = new FooBarProxy(new MediatrFake());
         proxy.ExecuteAapCommand("s");
         proxy.ExecuteSchaap_SchaapCommand("s");
-        proxy.ExecutePieterSchaap();
+        //proxy.ExecutePieterSchaap();
     }
 }
 
-public partial  class FooBarProxy
-{
-    public void ExecutePieterSchaap()
-    {
-        var request = new Schaap.SchaapCommand("Pieter");
-        _mediator.Execute(request);
-    }
-}
+// public partial  class FooBarProxy
+// {
+//     public void ExecutePieterSchaap()
+//     {
+//         var request = new Schaap.SchaapCommand("Pieter");
+//         _mediator.Execute(request);
+//     }
+// }
 public class MediatrFake: IMediator
 {
     public void Execute(IRequest request)

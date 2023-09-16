@@ -18,7 +18,7 @@ public class UseResultValueWithoutCheck : DiagnosticAnalyzer
     private const string MessageFormat = "Accessing Value without checking IsSuccess or IsError can result in an error";
     private const string Category = "Usage";
 
-    private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category,
+    public static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category,
         DiagnosticSeverity.Error, isEnabledByDefault: true, helpLinkUri: "https://www.youtube.com/watch?v=8r8D8RLxvkA");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
@@ -59,7 +59,7 @@ public class UseResultValueWithoutCheck : DiagnosticAnalyzer
 
         //Check if accessed inside if statement
         var enclosingControlStructures = memberAccess.Ancestors().Where(a => a is IfStatementSyntax or ConditionalExpressionSyntax);
-        if (!enclosingControlStructures.Any()) return;
+       
 
         var checksSucces = enclosingControlStructures
             .Where(structure =>
