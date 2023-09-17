@@ -40,8 +40,9 @@ public class UseResultValueWithoutCheck : DiagnosticAnalyzer
         var symbolInfo = context.SemanticModel.GetSymbolInfo(memberAccess);
         var memberSymbol = symbolInfo.Symbol as IPropertySymbol;
 
-       // if (memberSymbol == null || memberSymbol.ContainingType.ToString() != "CSharpFunctionalExtensions.Result<int, string>") return;
-        if (memberSymbol == null || memberSymbol.ContainingType == null ||memberSymbol.ContainingType.Name != "Result" ||memberSymbol.ContainingType.ContainingNamespace.ToString() != "CSharpFunctionalExtensions" ) 
+        // if (memberSymbol == null || memberSymbol.ContainingType.ToString() != "CSharpFunctionalExtensions.Result<int, string>") return;
+        if (memberSymbol == null || memberSymbol.ContainingType == null || memberSymbol.ContainingType.Name != "Result" ||
+            memberSymbol.ContainingType.ContainingNamespace.ToString() != "CSharpFunctionalExtensions")
             return;
 
         // Get the enclosing block (e.g., the method or property body)
@@ -52,7 +53,7 @@ public class UseResultValueWithoutCheck : DiagnosticAnalyzer
         var checks = enclosingBlock.DescendantNodes()
             .OfType<IfStatementSyntax>()
             .Where(ifStatement =>
-                WillExecute(ifStatement.Condition))
+                WillExecute(ifStatement.Condition) == CheckResult.CheckedFailure)
             .Where(ifStatement => ContainsTerminatingStatement(ifStatement.Statement))
             .ToList();
 
@@ -60,12 +61,12 @@ public class UseResultValueWithoutCheck : DiagnosticAnalyzer
 
         //Check if accessed inside if statement
         var enclosingControlStructures = memberAccess.Ancestors().Where(a => a is IfStatementSyntax or ConditionalExpressionSyntax);
-       
+
 
         var checksSucces = enclosingControlStructures
             .Where(structure =>
-                (structure is IfStatementSyntax ifStatement && WillExecute(ifStatement.Condition)) ||
-                (structure is ConditionalExpressionSyntax ternary && WillExecute(ternary.Condition)))
+                (structure is IfStatementSyntax ifStatement && WillExecute(ifStatement.Condition) == CheckResult.CheckedSuccess) ||
+                (structure is ConditionalExpressionSyntax ternary && WillExecute(ternary.Condition) == CheckResult.CheckedSuccess))
             .ToList();
 
         if (checksSucces.Any()) return;
@@ -74,48 +75,73 @@ public class UseResultValueWithoutCheck : DiagnosticAnalyzer
         context.ReportDiagnostic(diagnostic);
     }
 
-    private static bool WillExecute(ExpressionSyntax condition)
+
+    private static CheckResult WillExecute(ExpressionSyntax condition)
     {
-        if (condition is BinaryExpressionSyntax binaryExpression)
+        switch (condition)
         {
-            switch (binaryExpression.OperatorToken.Kind())
-            {
-                case SyntaxKind.AmpersandAmpersandToken:
-                    return WillExecute(binaryExpression.Left) || WillExecute(binaryExpression.Right);
-                case SyntaxKind.BarBarToken:
-                    return WillExecute(binaryExpression.Left) && WillExecute(binaryExpression.Right);
-            }
-        }
-        else if (condition is MemberAccessExpressionSyntax memberAccess)
-        {
-            if (memberAccess.Name.ToString() == "IsSuccess")
-            {
-                return true;
-            }
-            else if (memberAccess.Name.ToString() == "IsFailure")
-            {
-                return false;
-            }
-        }
-        else if (condition is PrefixUnaryExpressionSyntax prefixUnary)
-        {
-            if (prefixUnary.Operand.ToString().Contains("IsSuccess"))
-            {
-                return false; // This means we found a !IsSuccess, so we return false.
-            }
-            else if (prefixUnary.Operand.ToString().Contains("IsFailure"))
-            {
-                return true; // This means we found a !IsFailure, so we return true.
-            }
-        }
-        else if (condition is ConditionalExpressionSyntax ternary)
-        {
-            return WillExecute(ternary.Condition);
+            case BinaryExpressionSyntax binaryExpression:
+                switch (binaryExpression.OperatorToken.Kind())
+                {
+                    case SyntaxKind.AmpersandAmpersandToken:
+                    {
+                        var leftResult = WillExecute(binaryExpression.Left);
+                        var rightResult = WillExecute(binaryExpression.Right);
+                        if (leftResult == CheckResult.Unchecked) return rightResult;
+                        if (rightResult == CheckResult.Unchecked) return leftResult;
+                        // If both sides are the same, return either; otherwise, it's ambiguous so return Unchecked.
+                        return leftResult == rightResult ? leftResult : CheckResult.Unchecked;
+                    }
+                    case SyntaxKind.BarBarToken:
+                    {
+                        var leftResult = WillExecute(binaryExpression.Left);
+                        var rightResult = WillExecute(binaryExpression.Right);
+                        if (leftResult == CheckResult.Unchecked) return rightResult;
+                        if (rightResult == CheckResult.Unchecked) return leftResult;
+                        // If both sides are the same, return either; otherwise, it's ambiguous so return Unchecked.
+                        return leftResult == rightResult ? leftResult : CheckResult.Unchecked;
+                    }
+                    case SyntaxKind.EqualsEqualsToken:
+                    {
+                        if (binaryExpression.Left.ToString().Contains("IsSuccess") && binaryExpression.Right.ToString() == "true")
+                            return CheckResult.CheckedSuccess;
+                        if (binaryExpression.Left.ToString().Contains("IsFailure") && binaryExpression.Right.ToString() == "true")
+                            return CheckResult.CheckedFailure;
+                        break;
+                    }
+                    case SyntaxKind.ExclamationEqualsToken:
+                    {
+                        if (binaryExpression.Left.ToString().Contains("IsSuccess") && binaryExpression.Right.ToString() == "true")
+                            return CheckResult.CheckedFailure;
+                        if (binaryExpression.Left.ToString().Contains("IsFailure") && binaryExpression.Right.ToString() == "true")
+                            return CheckResult.CheckedSuccess;
+                        break;
+                    }
+                       
+                }
+
+                break;
+            case MemberAccessExpressionSyntax memberAccess:
+                switch (memberAccess.Name.ToString())
+                {
+                    case "IsSuccess":
+                        return CheckResult.CheckedSuccess;
+                    case "IsFailure":
+                        return CheckResult.CheckedFailure;
+                }
+
+                break;
+            case PrefixUnaryExpressionSyntax prefixUnary when prefixUnary.Operand.ToString().Contains("IsSuccess"):
+                return CheckResult.CheckedFailure; // This means we found a !IsSuccess, so it's equivalent to IsFailure.
+            case PrefixUnaryExpressionSyntax prefixUnary when prefixUnary.Operand.ToString().Contains("IsFailure"):
+                return CheckResult.CheckedSuccess; // This means we found a !IsFailure, so it's equivalent to IsSuccess.
+            case ConditionalExpressionSyntax ternary:
+                return WillExecute(ternary.Condition);
         }
 
-        return false;
+        return CheckResult.Unchecked;
     }
-    
+
     private bool ContainsTerminatingStatement(StatementSyntax statement)
     {
         return statement switch
@@ -127,4 +153,11 @@ public class UseResultValueWithoutCheck : DiagnosticAnalyzer
             _ => false
         };
     }
+}
+
+enum CheckResult
+{
+    CheckedSuccess,
+    CheckedFailure,
+    Unchecked
 }

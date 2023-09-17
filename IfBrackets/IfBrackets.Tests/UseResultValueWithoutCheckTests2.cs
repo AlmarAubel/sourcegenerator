@@ -36,10 +36,10 @@ public class UseResultValueWithoutCheckTests2:AbstractCSharpDiagnosticVerifier
     }
     
     [Fact]
-    public async Task AccesValueOnResultObject_WithCheckIsSuccess_ShouldNotFail()
+    public async Task AccesValueOnResultObject_WithCheckIsSuccess_ShouldPass()
     {
         var cSharpFunctionalExtensions= MetadataReference.CreateFromFile(typeof (CSharpFunctionalExtensions.Result).Assembly.Location);
-        await VerifyDiagnosticAsync(
+        await VerifyNoDiagnosticAsync(
             """
             using System;
             using CSharpFunctionalExtensions;
@@ -50,7 +50,8 @@ public class UseResultValueWithoutCheckTests2:AbstractCSharpDiagnosticVerifier
                 {
                    var result = Result.Success(1);
                    if(result.IsSuccess) Console.WriteLine(result.Value);
-                  //if(result.IsSuccess == true) Console.WriteLine(result.Value); <- This should be fixed
+                   if(result.IsSuccess == true) Console.WriteLine(result.Value);
+                   if(result.IsFailure != true) Console.WriteLine(result.Value);
                    var x=  result.IsSuccess ? result.Value: 0;
                 }
             }
@@ -83,7 +84,7 @@ public class UseResultValueWithoutCheckTests2:AbstractCSharpDiagnosticVerifier
     public async Task AccesValueOnResultObject_WithcheckingIsFailure_ShouldPass()
     {
         var cSharpFunctionalExtensions= MetadataReference.CreateFromFile(typeof (CSharpFunctionalExtensions.Result).Assembly.Location);
-        await VerifyDiagnosticAsync(
+        await VerifyNoDiagnosticAsync(
             """
             using System;
             using CSharpFunctionalExtensions;
