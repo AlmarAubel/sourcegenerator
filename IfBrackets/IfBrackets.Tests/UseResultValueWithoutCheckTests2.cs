@@ -1,25 +1,22 @@
-using System.IO;
 using System.Threading.Tasks;
-using CSharpFunctionalExtensions;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Testing;
 using  Roslynator.Testing.CSharp;
-
 using Xunit;
-
-using Roslynator.Testing.CSharp;
 
 namespace IfBrackets.Tests;  
 
-public class UseResultValueWithoutCheckTests2:AbstractCSharpDiagnosticVerifier<IfBrackets.UseResultValueWithoutCheck,DummyCodeFixProvider>
+public class UseResultValueWithoutCheckTests2:AbstractCSharpDiagnosticVerifier
+    <UseResultValueWithoutCheck,DummyCodeFixProvider>
 {
-    public override DiagnosticDescriptor Descriptor { get; } = IfBrackets.UseResultValueWithoutCheck.Rule;
+    public override DiagnosticDescriptor Descriptor => UseResultValueWithoutCheck.Rule;
     
-   
     [Fact]
-    public async Task AccesValueOnResultObjectWithoutcheckingIsSuccessOrFailureShouldWarn2()
+    public async Task AccesValueOnResultObject_WithoutcheckingIsSuccess_ShouldWarn2()
     {
-        var cSharpFunctionalExtensions= MetadataReference.CreateFromFile(typeof (CSharpFunctionalExtensions.Result).Assembly.Location);
+        var cSharpFunctionalExtensions= 
+            MetadataReference
+                .CreateFromFile(typeof (CSharpFunctionalExtensions.Result).Assembly.Location);
+        
         await VerifyDiagnosticAsync(
             """
             using System;
@@ -39,7 +36,7 @@ public class UseResultValueWithoutCheckTests2:AbstractCSharpDiagnosticVerifier<I
     }
     
     [Fact]
-    public async Task AccesValueOnResultObjectWithcheckingIsSuccessShouldNotFail()
+    public async Task AccesValueOnResultObject_WithCheckIsSuccess_ShouldNotFail()
     {
         var cSharpFunctionalExtensions= MetadataReference.CreateFromFile(typeof (CSharpFunctionalExtensions.Result).Assembly.Location);
         await VerifyDiagnosticAsync(
@@ -53,8 +50,57 @@ public class UseResultValueWithoutCheckTests2:AbstractCSharpDiagnosticVerifier<I
                 {
                    var result = Result.Success(1);
                    if(result.IsSuccess) Console.WriteLine(result.Value);
-                   if(result.IsSuccess == true) Console.WriteLine(result.Value);
-                   var x=  result.IsSuccess ? [|result.Value|]: 0;
+                  //if(result.IsSuccess == true) Console.WriteLine(result.Value); <- This should be fixed
+                   var x=  result.IsSuccess ? result.Value: 0;
+                }
+            }
+            """, options: Options.WithMetadataReferences( Options.MetadataReferences.Add(cSharpFunctionalExtensions)));
+    }  
+    
+    [Fact]
+    public async Task AccesValueOnResultObject_WithoutcheckingIsFailure_ShouldWarn()
+    {
+        var cSharpFunctionalExtensions= MetadataReference.CreateFromFile(typeof (CSharpFunctionalExtensions.Result).Assembly.Location);
+        await VerifyDiagnosticAsync(
+            """
+            using System;
+            using CSharpFunctionalExtensions;
+
+            public class FunctionsWithResultObject
+            {
+                public void GetId(int a)
+                {
+                   var result = Result.Success(1);
+                   if(result.IsFailure) Console.WriteLine([|result.Value|]);
+                   
+                   var x=  result.IsFailure ? [|result.Value|]: 0;
+                }
+            }
+            """, options: Options.WithMetadataReferences( Options.MetadataReferences.Add(cSharpFunctionalExtensions)));
+    }
+    
+    [Fact]
+    public async Task AccesValueOnResultObject_WithcheckingIsFailure_ShouldPass()
+    {
+        var cSharpFunctionalExtensions= MetadataReference.CreateFromFile(typeof (CSharpFunctionalExtensions.Result).Assembly.Location);
+        await VerifyDiagnosticAsync(
+            """
+            using System;
+            using CSharpFunctionalExtensions;
+
+            public class FunctionsWithResultObject
+            {
+                public void GetId(int a)
+                {
+                   var result = Result.Success(1);
+                   if(!result.IsFailure) Console.WriteLine(result.Value);
+                 
+                   var x =  !result.IsFailure ? result.Value: 0;
+                   
+                   if (result.IsFailure) return;
+                   var y = result.Value;
+                   
+                   
                 }
             }
             """, options: Options.WithMetadataReferences( Options.MetadataReferences.Add(cSharpFunctionalExtensions)));

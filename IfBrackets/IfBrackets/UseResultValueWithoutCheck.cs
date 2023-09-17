@@ -52,8 +52,7 @@ public class UseResultValueWithoutCheck : DiagnosticAnalyzer
         var checks = enclosingBlock.DescendantNodes()
             .OfType<IfStatementSyntax>()
             .Where(ifStatement =>
-                ifStatement.Condition.ToString().Contains(memberAccess.Expression + ".IsSuccess") ||
-                ifStatement.Condition.ToString().Contains(memberAccess.Expression + ".IsFailure"))
+                WillExecute(ifStatement.Condition))
             .Where(ifStatement => ContainsTerminatingStatement(ifStatement.Statement))
             .ToList();
 
@@ -65,8 +64,8 @@ public class UseResultValueWithoutCheck : DiagnosticAnalyzer
 
         var checksSucces = enclosingControlStructures
             .Where(structure =>
-                (structure is IfStatementSyntax ifStatement && WillExecuteWhenIsSuccess(ifStatement.Condition)) ||
-                (structure is ConditionalExpressionSyntax ternary && WillExecuteWhenIsSuccess(ternary.Condition)))
+                (structure is IfStatementSyntax ifStatement && WillExecute(ifStatement.Condition)) ||
+                (structure is ConditionalExpressionSyntax ternary && WillExecute(ternary.Condition)))
             .ToList();
 
         if (checksSucces.Any()) return;
@@ -75,46 +74,57 @@ public class UseResultValueWithoutCheck : DiagnosticAnalyzer
         context.ReportDiagnostic(diagnostic);
     }
 
-    private static bool WillExecuteWhenIsSuccess(ExpressionSyntax condition)
+    private static bool WillExecute(ExpressionSyntax condition)
     {
         if (condition is BinaryExpressionSyntax binaryExpression)
         {
             switch (binaryExpression.OperatorToken.Kind())
             {
                 case SyntaxKind.AmpersandAmpersandToken:
-                    return WillExecuteWhenIsSuccess(binaryExpression.Left) || WillExecuteWhenIsSuccess(binaryExpression.Right);
+                    return WillExecute(binaryExpression.Left) || WillExecute(binaryExpression.Right);
                 case SyntaxKind.BarBarToken:
-                    return WillExecuteWhenIsSuccess(binaryExpression.Left) && WillExecuteWhenIsSuccess(binaryExpression.Right);
+                    return WillExecute(binaryExpression.Left) && WillExecute(binaryExpression.Right);
             }
         }
-        else if (condition is MemberAccessExpressionSyntax memberAccess && memberAccess.Name.ToString() == "IsSuccess")
+        else if (condition is MemberAccessExpressionSyntax memberAccess)
         {
-            return true;
+            if (memberAccess.Name.ToString() == "IsSuccess")
+            {
+                return true;
+            }
+            else if (memberAccess.Name.ToString() == "IsFailure")
+            {
+                return false;
+            }
         }
-        else if (condition is PrefixUnaryExpressionSyntax prefixUnary && prefixUnary.Operand.ToString().Contains("IsSuccess"))
+        else if (condition is PrefixUnaryExpressionSyntax prefixUnary)
         {
-            return false; // This means we found a !IsSuccess, so we return false.
+            if (prefixUnary.Operand.ToString().Contains("IsSuccess"))
+            {
+                return false; // This means we found a !IsSuccess, so we return false.
+            }
+            else if (prefixUnary.Operand.ToString().Contains("IsFailure"))
+            {
+                return true; // This means we found a !IsFailure, so we return true.
+            }
         }
         else if (condition is ConditionalExpressionSyntax ternary)
         {
-            return WillExecuteWhenIsSuccess(ternary.Condition);
+            return WillExecute(ternary.Condition);
         }
 
         return false;
     }
-
+    
     private bool ContainsTerminatingStatement(StatementSyntax statement)
     {
-        // Check for return or throw statements directly within the provided statement
-        if (statement is ReturnStatementSyntax or ThrowStatementSyntax)
-            return true;
-
-        // If the statement is a block, check its child statements
-        if (statement is BlockSyntax block)
+        return statement switch
         {
-            return block.Statements.Any(childStatement => childStatement is ReturnStatementSyntax or ThrowStatementSyntax);
-        }
-
-        return false;
+            // Check for return or throw statements directly within the provided statement
+            ReturnStatementSyntax or ThrowStatementSyntax => true,
+            // If the statement is a block, check its child statements
+            BlockSyntax block => block.Statements.Any(childStatement => childStatement is ReturnStatementSyntax or ThrowStatementSyntax),
+            _ => false
+        };
     }
 }
