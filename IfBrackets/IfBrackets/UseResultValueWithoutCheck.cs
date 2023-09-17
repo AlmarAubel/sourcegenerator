@@ -96,8 +96,8 @@ public class UseResultValueWithoutCheck : DiagnosticAnalyzer
                     {
                         var leftResult = WillExecute(binaryExpression.Left);
                         var rightResult = WillExecute(binaryExpression.Right);
-                        if (leftResult == CheckResult.Unchecked) return rightResult;
-                        if (rightResult == CheckResult.Unchecked) return leftResult;
+                        if (leftResult == CheckResult.Unchecked) return leftResult;
+                        if (rightResult == CheckResult.Unchecked) return rightResult;
                         // If both sides are the same, return either; otherwise, it's ambiguous so return Unchecked.
                         return leftResult == rightResult ? leftResult : CheckResult.Unchecked;
                     }
@@ -119,7 +119,6 @@ public class UseResultValueWithoutCheck : DiagnosticAnalyzer
                     }
                        
                 }
-
                 break;
             case MemberAccessExpressionSyntax memberAccess:
                 switch (memberAccess.Name.ToString())
@@ -129,7 +128,6 @@ public class UseResultValueWithoutCheck : DiagnosticAnalyzer
                     case "IsFailure":
                         return CheckResult.CheckedFailure;
                 }
-
                 break;
             case PrefixUnaryExpressionSyntax prefixUnary when prefixUnary.Operand.ToString().Contains("IsSuccess"):
                 return CheckResult.CheckedFailure; // This means we found a !IsSuccess, so it's equivalent to IsFailure.

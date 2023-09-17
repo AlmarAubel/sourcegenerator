@@ -26,9 +26,10 @@ public class FunctionsWithResultObject
         if (true) Console.WriteLine(x.Value);
         if(1 > a && idFromDbResult.IsSuccess )
             Console.WriteLine(idFromDbResult.Value);
-
+        if(idFromDbResult.IsFailure) return 0;
+        Console.WriteLine(x.Value);
        //if (idFromDbResult.IsSuccess) return idFromDbResult.IsSuccess ? idFromDbResult.Value : 0;
-       if (!idFromDbResult.IsSuccess) Console.WriteLine(idFromDbResult.Value);
+       //if (!idFromDbResult.IsSuccess) Console.WriteLine(idFromDbResult.Value);
         
 
         return idFromDbResult.IsSuccess ? idFromDbResult.Value : 0;
