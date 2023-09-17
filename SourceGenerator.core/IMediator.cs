@@ -1,4 +1,4 @@
-namespace SourceGenerator;
+namespace SourceGenerator.core;
 
 public interface IMediator
 {

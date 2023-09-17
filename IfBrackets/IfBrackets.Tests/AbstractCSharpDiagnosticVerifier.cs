@@ -6,9 +6,11 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
+using Roslynator.Testing;
+using Roslynator.Testing.CSharp;
 using Roslynator.Testing.CSharp.Xunit;
 
-namespace Roslynator.Testing.CSharp;
+namespace IfBrackets.Tests;
 
 public abstract class AbstractCSharpDiagnosticVerifier<TAnalyzer, TFixProvider> : XunitDiagnosticVerifier<TAnalyzer, TFixProvider>
     where TAnalyzer : DiagnosticAnalyzer, new()

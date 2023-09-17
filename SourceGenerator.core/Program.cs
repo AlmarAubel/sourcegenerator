@@ -1,6 +1,5 @@
-﻿namespace SourceGenerator;
+﻿namespace SourceGenerator.core;
 
-using System;
 public static partial class Program
 {
     public static void Main(string[] args)

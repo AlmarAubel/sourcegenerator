@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace SourceGenerator;
+namespace SourceGenerator.generator;
 
 [Generator]
 public class HelloSourceGenerator : ISourceGenerator

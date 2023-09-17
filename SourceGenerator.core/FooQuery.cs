@@ -1,4 +1,4 @@
-namespace SourceGenerator;
+namespace SourceGenerator.core;
 
 [GenerateProxy] public record FooQuery(int bar, string sheep):IRequest;
 
